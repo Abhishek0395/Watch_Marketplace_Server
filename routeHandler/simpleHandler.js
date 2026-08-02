@@ -14,14 +14,15 @@ const router = express.Router();
 // });
 router.get('/', async (req, res) => {
     try {
-        const dbName = Watch.db.name; // which DB is it connected to?
-        const total = await Watch.countDocuments({}); // how many watches total?
-        const approved = await Watch.find({ status: 'approved' });
+        const dbName = Watch.db.name;
+        const total = await Watch.countDocuments({});
+        const statuses = await Watch.distinct('status'); // <-- every distinct status value
+        const sample = await Watch.findOne({}, 'title status'); // <-- one doc's title + status
         res.status(200).json({
             dbName,
             total,
-            approvedCount: approved.length,
-            approved,
+            statuses,
+            sample,
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
